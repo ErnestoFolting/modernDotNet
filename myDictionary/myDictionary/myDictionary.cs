@@ -193,6 +193,7 @@ namespace myDictionary
             {
                 TValue value;
                 TryGetValue(key, out value);
+                if (Comparer.Equals(value,default(TValue))) throw new Exception("No element at that index.");
                 return value;
             }
             set
@@ -213,6 +214,37 @@ namespace myDictionary
                     } while (index != -1 && !entries[index].Equals(default(Entry)));
                 }
                 throw new Exception("Invalid index while setting a value.");
+            }
+        }
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                ICollection<TKey> keys = new List<TKey>();    
+                for (int i = 0; i < size; i++)
+                {
+                    if(!Comparer.Equals(entries[i].key, default(TKey)))
+                    {
+                        keys.Add(entries[i].key);
+                    }
+                    
+                }
+                return keys;
+            }
+        }
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                ICollection<TValue> values = new List<TValue>();
+                for (int i = 0; i < size; i++)
+                {
+                    if (!Comparer.Equals(entries[i].value, default(TValue)))
+                    {
+                        values.Add(entries[i].value);
+                    }
+                }
+                return values;
             }
         }
     }

@@ -15,8 +15,7 @@ namespace Lab1
                 my.Add("a2", "b");
                 my.Add("a3", "b");
                 my.Remove("a");
-                my.Add("b", "check");
-                my.Add("b2", "c");
+
                 string value = "";
                 if (my.TryGetValue("d",out value))
                 {
@@ -26,8 +25,13 @@ namespace Lab1
                 {
                     Console.WriteLine("NOT CONTAINS");
                 }
-                my["b"] = "a";
-                Console.WriteLine(my["b"]);
+                my["a2"] = "a";
+                Console.WriteLine();
+                foreach(var el in my.Values)
+                {
+                    Console.WriteLine("{0}el",el) ;
+                }
+                
             }
             catch (Exception ex)            
             {
