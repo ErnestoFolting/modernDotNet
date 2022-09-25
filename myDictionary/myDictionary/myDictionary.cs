@@ -54,7 +54,6 @@ namespace myDictionary
                 {
                     if (entries[index].hashCode == hash && Comparer.Equals(entries[index].key, key))
                     {
-                        entries[index].value = value;
                         throw new Exception("Not added. Duplicate element.");
                         return;
                     }
@@ -150,6 +149,71 @@ namespace myDictionary
             }
             buckets = newBuckets;
             entries = newEntries;
+        }
+        public bool ContainsKey(TKey keyToFind)
+        {
+            int hash = keyToFind.GetHashCode();
+            int bucketNum = (hash & 0x7fffffff) % buckets.Length;
+            int index = buckets[bucketNum];
+            if (index != -1)
+            {
+                do
+                {
+                    if (entries[index].hashCode == hash && Comparer.Equals(entries[index].key, keyToFind))
+                    {
+                        return true;
+                    }
+                    index = entries[index].next;
+                } while (index != -1 && !entries[index].Equals(default(Entry)));
+            }
+            return false;
+        }
+        public bool TryGetValue(TKey keyToFind, out TValue value)
+        {
+            if (ContainsKey(keyToFind)){
+                int hash = keyToFind.GetHashCode();
+                int bucketNum = (hash & 0x7fffffff) % buckets.Length;
+                int index = buckets[bucketNum];
+                do
+                {
+                    if (entries[index].hashCode == hash && Comparer.Equals(entries[index].key, keyToFind))
+                    {
+                        value = entries[index].value;
+                        return true;
+                    }
+                    index = entries[index].next;
+                } while (index != -1 && !entries[index].Equals(default(Entry)));
+            }
+            value = default(TValue);
+            return false;
+        }
+        public TValue this[TKey key]
+        {
+            get
+            {
+                TValue value;
+                TryGetValue(key, out value);
+                return value;
+            }
+            set
+            {
+                int hash = key.GetHashCode();
+                int bucketNum = (hash & 0x7fffffff) % buckets.Length;
+                int index = buckets[bucketNum];
+                if (index != -1)
+                {
+                    do
+                    {
+                        if (entries[index].hashCode == hash && Comparer.Equals(entries[index].key, key))
+                        {
+                            entries[index].value = value;
+                            return;
+                        }
+                        index = entries[index].next;
+                    } while (index != -1 && !entries[index].Equals(default(Entry)));
+                }
+                throw new Exception("Invalid index while setting a value.");
+            }
         }
     }
 }
