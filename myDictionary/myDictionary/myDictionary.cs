@@ -46,9 +46,7 @@ namespace myDictionary
             int hash = key.GetHashCode();
             Entry temp = new Entry(hash,key,value);
             int bucketNum = (hash & 0x7fffffff)%buckets.Length;
-            Console.WriteLine("Added to Bucket {0} with Hash {1}",bucketNum,hash);
             int index = buckets[bucketNum];
-            
             if (index != -1)
             {
                 temp.next = index;
@@ -57,11 +55,11 @@ namespace myDictionary
                     if (entries[index].hashCode == hash && Comparer.Equals(entries[index].key, key))
                     {
                         entries[index].value = value;
-                        throw new ArgumentException();
+                        throw new Exception("Not added. Duplicate element.");
                         return;
                     }
                     index = entries[index].next;
-                } while (index != -1 && entries[index].next != -1);
+                } while (index != -1 && !entries[index].Equals(default(Entry)));
             }
             if(freeIndex != -1)
             {
@@ -76,6 +74,7 @@ namespace myDictionary
                 entries[indexToPut] = temp;
                 buckets[bucketNum] = indexToPut;
             }
+            Console.WriteLine("Added to Bucket {0} with Hash {1}", bucketNum, hash);
             Console.WriteLine("Free is {0}",freeIndex);
             --freeCount;
         }
@@ -83,7 +82,6 @@ namespace myDictionary
         {
             int hash = key.GetHashCode();
             int bucketNum = (hash & 0x7fffffff) % buckets.Length;
-            Console.WriteLine("DELETED Bucket {0} with Hash {1}", bucketNum, hash);
             int index = buckets[bucketNum];
             if(index != -1)
             {
@@ -108,6 +106,7 @@ namespace myDictionary
                         entries[index].key = default(TKey);
                         entries[index].hashCode = -1;
                         freeCount++;
+                        Console.WriteLine("DELETED Bucket {0} with Hash {1}", bucketNum, hash);
                         return true;
                     }
                     if (entries[index].next != -1)
@@ -116,6 +115,7 @@ namespace myDictionary
                         index = entries[index].next;
                         isFirst = false;
                     }
+                    else break;
                         
                 } while (!entries[index].Equals(default(Entry))); 
             }
