@@ -31,7 +31,12 @@ namespace Lab1
                 {
                     Console.WriteLine("{0}el",el) ;
                 }
-                
+                KeyValuePair<string, string>[] temp = new KeyValuePair<string, string>[3];
+                my.CopyTo(temp, 0);
+                foreach(var el in temp)
+                {
+                    Console.WriteLine("{0} - {1}",el.Key,el.Value);
+                }
             }
             catch (Exception ex)            
             {

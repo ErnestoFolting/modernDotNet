@@ -247,5 +247,72 @@ namespace myDictionary
                 return values;
             }
         }
+        public void Add(KeyValuePair<TKey,TValue> pair)
+        {
+            Add(pair.Key, pair.Value);
+        }
+        public void Clear()
+        {
+            size = 3;
+            buckets = new int[size];
+            for (int i = 0; i < size; i++) buckets[i] = -1;
+            entries = new Entry[size];
+            freeIndex = -1;
+            freeCount = size;
+        }
+        public bool Contains(KeyValuePair<TKey, TValue> pair)
+        {
+            int hash = pair.Key.GetHashCode();
+            int bucketNum = (hash & 0x7fffffff) % buckets.Length;
+            int index = buckets[bucketNum];
+            if (index != -1)
+            {
+                do
+                {
+                    if (entries[index].hashCode == hash && Comparer.Equals(entries[index].key, pair.Key) && Comparer.Equals(entries[index].value, pair.Value))
+                    {
+                        return true;
+                    }
+                    index = entries[index].next;
+                } while (index != -1 && !entries[index].Equals(default(Entry)));
+            }
+            return false;
+        }
+        public bool Remove(KeyValuePair<TKey, TValue> pair)
+        {
+            return Remove(pair.Key);
+        }
+        public int Count {
+            get
+            {
+                return(size-freeCount);
+            } 
+        }
+        public bool IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public void CopyTo(KeyValuePair<TKey, TValue>[] res,int fromIndex)
+        {
+            if((size-freeCount)> res.Length-fromIndex || fromIndex < 0)
+            {
+                throw new ArgumentException();
+            }
+            else
+            {
+                for(int i = 0;i < size; i++)
+                {
+                    if(!Comparer.Equals(entries[i].value, default(TValue)))
+                    {
+                        KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue>(entries[i].key, entries[i].value);
+                        res[fromIndex] = temp;
+                        fromIndex++;
+                    }
+                }
+            }
+        }
     }
 }
