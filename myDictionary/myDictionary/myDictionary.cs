@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace myDictionary
 {
-    public class myDict<TKey,TValue>
+    public class myDict<TKey,TValue>:IDictionary<TKey,TValue>
     {
         private struct Entry
         {
@@ -27,6 +27,9 @@ namespace myDictionary
         private int freeIndex;
         private int freeCount;
         private int size;
+        public event Action<TKey, TValue> added;
+        public event Action<TKey, TValue> deleted;
+        public event Action<int> cleared;
         public myDict()
         {
             size = 3;
@@ -73,8 +76,7 @@ namespace myDictionary
                 entries[indexToPut] = temp;
                 buckets[bucketNum] = indexToPut;
             }
-            Console.WriteLine("Added to Bucket {0} with Hash {1}", bucketNum, hash);
-            Console.WriteLine("Free is {0}",freeIndex);
+            added?.Invoke(key, value);
             --freeCount;
         }
         public bool Remove(TKey key)
@@ -98,14 +100,14 @@ namespace myDictionary
                         {
                             entries[prevIndex].next = entries[index].next;
                         }
-                        Console.WriteLine("free index override {0}",freeIndex);
                         entries[index].next = freeIndex;
                         freeIndex = index;
+                        TValue val = entries[index].value;
                         entries[index].value = default(TValue);
                         entries[index].key = default(TKey);
                         entries[index].hashCode = -1;
                         freeCount++;
-                        Console.WriteLine("DELETED Bucket {0} with Hash {1}", bucketNum, hash);
+                        deleted?.Invoke(key, val);
                         return true;
                     }
                     if (entries[index].next != -1)
@@ -138,7 +140,6 @@ namespace myDictionary
             for(int i = 0; i < oldsize; i++)
             {
                 int hash = newEntries[i].hashCode;
-                Console.WriteLine("Check HASH {0}",hash);
                 if (hash != -1)
                 {
                     int bucketNum = (hash & 0x7fffffff) % newBuckets.Length;
@@ -259,6 +260,7 @@ namespace myDictionary
             entries = new Entry[size];
             freeIndex = -1;
             freeCount = size;
+            cleared?.Invoke(size);
         }
         public bool Contains(KeyValuePair<TKey, TValue> pair)
         {
@@ -295,17 +297,17 @@ namespace myDictionary
                 return false;
             }
         }
-        public void CopyTo(KeyValuePair<TKey, TValue>[] res,int fromIndex)
+        public void CopyTo(KeyValuePair<TKey, TValue>[] res, int fromIndex)
         {
-            if((size-freeCount)> res.Length-fromIndex || fromIndex < 0)
+            if ((size - freeCount) > res.Length - fromIndex || fromIndex < 0)
             {
                 throw new ArgumentException();
             }
             else
             {
-                for(int i = 0;i < size; i++)
+                for (int i = 0; i < size; i++)
                 {
-                    if(!Comparer.Equals(entries[i].value, default(TValue)))
+                    if (!Comparer.Equals(entries[i].value, default(TValue)))
                     {
                         KeyValuePair<TKey, TValue> temp = new KeyValuePair<TKey, TValue>(entries[i].key, entries[i].value);
                         res[fromIndex] = temp;
@@ -313,6 +315,20 @@ namespace myDictionary
                     }
                 }
             }
+        }
+        public IEnumerator<KeyValuePair<TKey,TValue>> GetEnumerator()
+        {
+            foreach(var el in entries)
+            {
+                if (!Comparer.Equals(el.value, default(TValue)))
+                {
+                    yield return new KeyValuePair<TKey, TValue>(el.key, el.value);
+                }
+            }
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
