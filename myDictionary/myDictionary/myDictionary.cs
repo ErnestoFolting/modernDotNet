@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace myDictionary
 {
-    public class myDict<TKey,TValue>:IDictionary<TKey,TValue>
+    public class myDict<TKey,TValue> : IDictionary<TKey, TValue>
     {
         private struct Entry
         {
@@ -28,7 +28,7 @@ namespace myDictionary
         private int freeCount;
         private int size;
         public event Action<TKey, TValue> added;
-        public event Action<TKey, TValue> deleted;
+        public event Action<TKey, TValue> removed;
         public event Action<int> cleared;
         public myDict()
         {
@@ -107,7 +107,7 @@ namespace myDictionary
                         entries[index].key = default(TKey);
                         entries[index].hashCode = -1;
                         freeCount++;
-                        deleted?.Invoke(key, val);
+                        removed?.Invoke(key, val);
                         return true;
                     }
                     if (entries[index].next != -1)
@@ -316,9 +316,9 @@ namespace myDictionary
                 }
             }
         }
-        public IEnumerator<KeyValuePair<TKey,TValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach(var el in entries)
+            foreach (var el in entries)
             {
                 if (!Comparer.Equals(el.value, default(TValue)))
                 {

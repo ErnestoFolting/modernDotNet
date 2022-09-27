@@ -10,56 +10,69 @@ namespace Lab1
         {
             try
             {
-                //myDict<string, string> my = new myDict<string, string>();
-                //my.Add("a", "b");
-                //my.Add("a2", "b");
-                //my.Add("a3", "b");
-                //my.Remove("a");
-
-                //string value = "";
-                //if (my.TryGetValue("d", out value))
-                //{
-                //    Console.WriteLine(value);
-                //}
-                //else
-                //{
-                //    Console.WriteLine("NOT CONTAINS");
-                //}
-                //my["a2"] = "a";
-                //Console.WriteLine();
-                //foreach (var el in my.Values)
-                //{
-                //    Console.WriteLine("{0}el", el);
-                //}
-                //KeyValuePair<string, string>[] temp = new KeyValuePair<string, string>[5];
-                //my.CopyTo(temp, 0);
-                //Console.WriteLine();
-                //foreach (var el in temp)
-                //{
-                //    Console.WriteLine("{0} - {1}", el.Key, el.Value);
-                //}
-                //Console.WriteLine();
-                //foreach (var el in my)
-                //{
-                //    Console.WriteLine("{0} --- {1}", el.Key, el.Value);
-                //}
-                myDict<string, string> my2 = new()
+                myDict<int, string> dict = new myDict<int, string>()
                 {
-                    { "a", "a" },
-                    { "b", "b" },
-                    { "c", "c" },
-                    { "d", "d" },
-                    { "e", "e" }
+                    {1,"a"},
+                    {2,"b"},
+                    {3,"c"},
                 };
-                my2.added += addedHandler;
-                my2.deleted += removedHandler;
-                my2.cleared += clearedHandler;
-                my2.Remove("b");
-                foreach (var el in my2)
+                dict.added += addedHandler;
+                dict.removed += removedHandler;
+                dict.cleared += clearedHandler;
+
+                dict.Add(-1,"a");
+                dict.Add(5,"e");
+                Console.WriteLine("\nForeach: ");
+                foreach (var el in dict)
                 {
-                    Console.WriteLine("{0} --- {1}", el.Key, el.Value);
+                    Console.WriteLine("{0} - {1}", el.Key, el.Value);
                 }
-                my2.Clear();
+
+                dict.Remove(5);
+
+                if (dict.ContainsKey(5))
+                {
+                    Console.WriteLine("Contains");
+                }
+                else
+                {
+                    Console.WriteLine("Not contains");
+                }
+
+                string res = "";
+                if (dict.TryGetValue(3, out res)) Console.WriteLine("Got value: {0}",res);
+
+                dict[2] = "a";
+                Console.WriteLine("dict[2] - {0}",dict[2]);
+
+                Console.WriteLine();
+                ICollection<int> keys = dict.Keys;
+                foreach (int key in keys)
+                {
+                    Console.WriteLine("Key - {0}",key);
+                }
+
+                Console.WriteLine("\nElements count: {0}", dict.Count);
+
+                KeyValuePair<int, string>[] copied = new KeyValuePair<int, string>[4];
+                dict.CopyTo(copied, 0);
+
+                foreach(var item in copied)
+                {
+                    Console.WriteLine("Copied {0} - {1}",item.Key,item.Value);
+                }
+
+                dict.Clear();
+
+                KeyValuePair<int,string> temp = new KeyValuePair<int, string>(0, "x");
+                if (dict.Contains(temp))
+                {
+                    Console.WriteLine("\nContains");
+                }
+                else
+                {
+                    Console.WriteLine("\nNot contains");
+                }
             }
             catch (Exception ex)            
             {
