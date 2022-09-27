@@ -42,6 +42,7 @@ namespace myDictionary
 
         public void Add(TKey key, TValue value)
         {
+            if (key == null || value == null) throw new ArgumentNullException();
             if (freeCount == 0)
             {
                 resize();
@@ -120,7 +121,7 @@ namespace myDictionary
                         
                 } while (!entries[index].Equals(default(Entry))); 
             }
-            throw new Exception("No such an element");
+            throw new KeyNotFoundException();
             return false;
         }
 
@@ -194,7 +195,7 @@ namespace myDictionary
             {
                 TValue value;
                 TryGetValue(key, out value);
-                if (Comparer.Equals(value,default(TValue))) throw new Exception("No element at that index.");
+                if (Comparer.Equals(value,default(TValue))) throw new KeyNotFoundException();
                 return value;
             }
             set
@@ -214,7 +215,7 @@ namespace myDictionary
                         index = entries[index].next;
                     } while (index != -1 && !entries[index].Equals(default(Entry)));
                 }
-                throw new Exception("Invalid index while setting a value.");
+                throw new KeyNotFoundException();
             }
         }
         public ICollection<TKey> Keys
