@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace myDictionary
+namespace myDictionaryLib
 {
-    public class myDict<TKey,TValue> : IDictionary<TKey, TValue>
+    public class myDict<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private struct Entry
         {
@@ -15,7 +15,7 @@ namespace myDictionary
             public int next = -1;
             public TKey key;
             public TValue value;
-            public Entry(int hash,TKey k, TValue val)
+            public Entry(int hash, TKey k, TValue val)
             {
                 hashCode = hash;
                 key = k;
@@ -34,7 +34,7 @@ namespace myDictionary
         {
             size = 3;
             buckets = new int[size];
-            for(int i = 0; i < size;i++)buckets[i] = -1;
+            for (int i = 0; i < size; i++) buckets[i] = -1;
             entries = new Entry[size];
             freeIndex = -1;
             freeCount = size;
@@ -48,8 +48,8 @@ namespace myDictionary
                 resize();
             }
             int hash = key.GetHashCode();
-            Entry temp = new Entry(hash,key,value);
-            int bucketNum = (hash & 0x7fffffff)%buckets.Length;
+            Entry temp = new Entry(hash, key, value);
+            int bucketNum = (hash & 0x7fffffff) % buckets.Length;
             int index = buckets[bucketNum];
             if (index != -1)
             {
@@ -64,7 +64,7 @@ namespace myDictionary
                     index = entries[index].next;
                 } while (index != -1 && !entries[index].Equals(default(Entry)));
             }
-            if(freeIndex != -1)
+            if (freeIndex != -1)
             {
                 int freeIndexNext = entries[freeIndex].next;
                 entries[freeIndex] = temp;
@@ -85,7 +85,7 @@ namespace myDictionary
             int hash = key.GetHashCode();
             int bucketNum = (hash & 0x7fffffff) % buckets.Length;
             int index = buckets[bucketNum];
-            if(index != -1)
+            if (index != -1)
             {
                 bool isFirst = true;
                 int prevIndex = index;
@@ -118,8 +118,8 @@ namespace myDictionary
                         isFirst = false;
                     }
                     else break;
-                        
-                } while (!entries[index].Equals(default(Entry))); 
+
+                } while (!entries[index].Equals(default(Entry)));
             }
             throw new KeyNotFoundException();
             return false;
@@ -138,7 +138,7 @@ namespace myDictionary
             {
                 newEntries[i] = entries[i];
             }
-            for(int i = 0; i < oldsize; i++)
+            for (int i = 0; i < oldsize; i++)
             {
                 int hash = newEntries[i].hashCode;
                 if (hash != -1)
@@ -172,7 +172,8 @@ namespace myDictionary
         }
         public bool TryGetValue(TKey keyToFind, out TValue value)
         {
-            if (ContainsKey(keyToFind)){
+            if (ContainsKey(keyToFind))
+            {
                 int hash = keyToFind.GetHashCode();
                 int bucketNum = (hash & 0x7fffffff) % buckets.Length;
                 int index = buckets[bucketNum];
@@ -195,7 +196,7 @@ namespace myDictionary
             {
                 TValue value;
                 TryGetValue(key, out value);
-                if (Comparer.Equals(value,default(TValue))) throw new KeyNotFoundException();
+                if (Comparer.Equals(value, default(TValue))) throw new KeyNotFoundException();
                 return value;
             }
             set
@@ -222,14 +223,14 @@ namespace myDictionary
         {
             get
             {
-                ICollection<TKey> keys = new List<TKey>();    
+                ICollection<TKey> keys = new List<TKey>();
                 for (int i = 0; i < size; i++)
                 {
-                    if(!Comparer.Equals(entries[i].key, default(TKey)))
+                    if (!Comparer.Equals(entries[i].key, default(TKey)))
                     {
                         keys.Add(entries[i].key);
                     }
-                    
+
                 }
                 return keys;
             }
@@ -249,7 +250,7 @@ namespace myDictionary
                 return values;
             }
         }
-        public void Add(KeyValuePair<TKey,TValue> pair)
+        public void Add(KeyValuePair<TKey, TValue> pair)
         {
             Add(pair.Key, pair.Value);
         }
@@ -285,11 +286,12 @@ namespace myDictionary
         {
             return Remove(pair.Key);
         }
-        public int Count {
+        public int Count
+        {
             get
             {
-                return(size-freeCount);
-            } 
+                return (size - freeCount);
+            }
         }
         public bool IsReadOnly
         {

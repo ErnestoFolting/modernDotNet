@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using myDictionary;
+using myDictionaryLib;
 
 namespace Lab1
 {
