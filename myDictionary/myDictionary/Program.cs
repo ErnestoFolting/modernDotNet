@@ -81,8 +81,8 @@ namespace Lab1
                 Console.ResetColor();
             } 
         }
-        static void addedHandler<TKey, TValue>(TKey key, TValue val) => Console.WriteLine("Added: {0} - {1}",key, val);
-        static void removedHandler<TKey, TValue>(TKey key, TValue val) => Console.WriteLine("Removed: {0} - {1}",key, val);
-        static void clearedHandler(int newSize) => Console.WriteLine("The collection has been cleared. The new size is {0}",newSize);
+        static void addedHandler(object obj, addEventArgs args) => Console.WriteLine("Added. The new size is {0}", args.size);
+        static void removedHandler(object obj, removeEventArgs args) => Console.WriteLine("Removed. The new size is {0}", args.size);
+        static void clearedHandler(object obj, clearEventArgs args) => Console.WriteLine("Cleared. The new size is {0}",args.size);
     }
 }

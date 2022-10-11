@@ -20,4 +20,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\myDictionaryLib\myDictionaryLib.csproj" />
+  </ItemGroup>
+
 </Project>

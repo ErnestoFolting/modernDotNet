@@ -7,6 +7,18 @@ using System.Threading.Tasks;
 
 namespace myDictionaryLib
 {
+    public class addEventArgs : EventArgs
+    {
+        public int size;
+    }
+    public class removeEventArgs : EventArgs
+    {
+        public int size;
+    }
+    public class clearEventArgs : EventArgs
+    {
+        public int size;
+    }
     public class myDict<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private struct Entry
@@ -27,9 +39,9 @@ namespace myDictionaryLib
         private int freeIndex;
         private int freeCount;
         private int size;
-        public event Action<TKey, TValue> added;
-        public event Action<TKey, TValue> removed;
-        public event Action<int> cleared;
+        public event Action<object, addEventArgs> added;
+        public event Action<object, removeEventArgs> removed;
+        public event Action<object, clearEventArgs> cleared;
         public myDict()
         {
             size = 3;
@@ -58,7 +70,7 @@ namespace myDictionaryLib
                 {
                     if (entries[index].hashCode == hash && Comparer.Equals(entries[index].key, key))
                     {
-                        throw new Exception("Not added. Duplicate element.");
+                        throw new InvalidOperationException();
                         return;
                     }
                     index = entries[index].next;
@@ -77,8 +89,10 @@ namespace myDictionaryLib
                 entries[indexToPut] = temp;
                 buckets[bucketNum] = indexToPut;
             }
-            added?.Invoke(key, value);
             --freeCount;
+            addEventArgs args = new addEventArgs();
+            args.size = size - freeCount;
+            added?.Invoke(this, args);
         }
         public bool Remove(TKey key)
         {
@@ -108,7 +122,9 @@ namespace myDictionaryLib
                         entries[index].key = default(TKey);
                         entries[index].hashCode = -1;
                         freeCount++;
-                        removed?.Invoke(key, val);
+                        removeEventArgs args = new removeEventArgs();
+                        args.size = size - freeCount;
+                        removed?.Invoke(this, args);
                         return true;
                     }
                     if (entries[index].next != -1)
@@ -262,7 +278,9 @@ namespace myDictionaryLib
             entries = new Entry[size];
             freeIndex = -1;
             freeCount = size;
-            cleared?.Invoke(size);
+            clearEventArgs args = new clearEventArgs();
+            args.size = size - freeCount;
+            cleared?.Invoke(this,args);
         }
         public bool Contains(KeyValuePair<TKey, TValue> pair)
         {
