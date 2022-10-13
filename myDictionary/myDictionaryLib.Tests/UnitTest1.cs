@@ -169,6 +169,15 @@ namespace myDictionaryLib.Tests
             Assert.Equal("b", value);
         }
         [Fact]
+        public void ThisByKeyGet_AccessToNotExistingValueByKey_KeyNotFoundExceptionThrown()
+        {
+            _dict.Add(1, "a");
+            _dict.Add(2, "b");
+            _dict.Add(3, "c");
+
+            Assert.Throws<KeyNotFoundException>(() => _dict[4]);
+        }
+        [Fact]
         public void ThisByKeySet_ChangeTheValueOfElement_CorrectChange()
         {
             _dict.Add(1, "a");
@@ -211,9 +220,35 @@ namespace myDictionaryLib.Tests
             Assert.Equal(expected, lst);
         }
         [Fact]
+        public void Keys_GetKeys_GotKeysIsCorrect()
+        {
+            _dict.Add(1, "a");
+            _dict.Add(2, "b");
+            _dict.Add(3, "c");
+
+            ICollection<int> lst = _dict.Keys;
+            ICollection<int> expected = new List<int>() {1,2,3};
+            Assert.Equal(expected, lst);
+        }
+        [Fact]
         public void IsReadOnly_CheckIfIsreadOnly_False()
         {
             Assert.False(_dict.IsReadOnly);
+        }
+        [Fact]
+        public void TryGetValue_TryToGetExistingElement_GotElement()
+        {
+            myDict<string, string> dict = new myDict<string, string>()
+            {
+                {"1","a"},
+                {"2","b"},
+                {"3","c"},
+            };
+            string value = "";
+
+            dict.TryGetValue("3", out value);
+
+            Assert.Equal("c", value);
         }
         [Fact]
         public void TryGetValue_TryToGetElementThatNotExist_ReturnsDefault()
@@ -241,7 +276,7 @@ namespace myDictionaryLib.Tests
                 {"3","c"},
             };
 
-            Assert.Contains(pair, dict);
+            Assert.True(dict.Contains(pair));
         }
         [Fact]
         public void ContainsKeyValuePair_CheckIfContainsNotExistingElement_False()
@@ -254,7 +289,7 @@ namespace myDictionaryLib.Tests
                 {"3","c"},
             };
 
-            Assert.DoesNotContain(pair, dict);
+            Assert.False(dict.Contains(pair));
         }
         [Fact]
         public void CopyTo_TryToCopyMoreElementsThenCollectionSize_ArgumentExceptionThrown()
@@ -265,6 +300,14 @@ namespace myDictionaryLib.Tests
             _dict.Add(3, "c");
             _dict.Add(4, "d");
             Assert.Throws<ArgumentException>(() => _dict.CopyTo(res,0));
+        }
+        [Fact]
+        public void CopyTo_TryToCopyToCollectionFromNegativeIndex_ArgumentExceptionThrown()
+        {
+            KeyValuePair<int, string>[] res = new KeyValuePair<int, string>[3];
+            _dict.Add(1, "a");
+
+            Assert.Throws<ArgumentException>(() => _dict.CopyTo(res, -1));
         }
         [Fact]
         public void CopyTo_TryToCopyElements_ElementsCopiedCorrectly()
